@@ -30,6 +30,7 @@ class Place(models.Model):
     visits = models.PositiveIntegerField(default=0)
     level = models.PositiveIntegerField(default=0)
     xp_reward = models.IntegerField(default=10)
+    approved = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

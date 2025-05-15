@@ -35,6 +35,15 @@ class PlaceListCreateView(generics.ListCreateAPIView):
         'coord_y': ['exact'],
     }   
 
+    def get_queryset(self):
+        return Place.objects.filter(approved=True)
+
+    def perform_create(self, serializer):
+        if self.request.user.is_superuser:
+            serializer.save(approved=True)
+        else:
+            serializer.save(approved=False)
+
 
 class PlaceDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Place.objects.all()
@@ -77,3 +86,21 @@ class VisitPlaceView(APIView):
             "user_level": user.level,
             "total_visits_to_place": place.visits,
         }, status=status.HTTP_201_CREATED)
+
+
+class ApprovePlaceView(APIView):
+    permission_classes = [IsSuperUserOrReadOnly]
+
+    def post(self, request, pk):
+        try:
+            place = Place.objects.get(pk=pk)
+        except Place.DoesNotExist:
+            return Response({'error': 'Place not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if place.approved:
+            return Response({'message': 'Place is already approved.'}, status=status.HTTP_200_OK)
+
+        place.approved = True
+        place.save()
+
+        return Response({'message': f'Place "{place.name}" has been approved.'}, status=status.HTTP_200_OK)

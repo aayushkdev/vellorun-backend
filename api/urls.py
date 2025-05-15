@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView, ProfileView, PlaceListCreateView, PlaceDetailView, VisitPlaceView
+from .views import RegisterView, ProfileView, PlaceListCreateView, PlaceDetailView, VisitPlaceView, ApprovePlaceView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
@@ -10,4 +10,5 @@ urlpatterns = [
     path('places/', PlaceListCreateView.as_view(), name='place-list-create'),
     path('places/<int:pk>/', PlaceDetailView.as_view(), name='place-detail'),
     path('visit/', VisitPlaceView.as_view(), name='visit-place'),
+    path('places/<int:pk>/approve/', ApprovePlaceView.as_view(), name='approve-place'),
 ]

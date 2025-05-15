@@ -8,7 +8,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['username', 'password', 'avatar', 'xp', 'level', 'visible']
-        read_only_fields = ['avatar', 'xp', 'level', 'visible']
+        read_only_fields = ['avatar', 'xp', 'level']
 
     def create(self, validated_data):
         user = CustomUser.objects.create_user(
@@ -36,7 +36,8 @@ class PlaceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Place
-        fields = ['id', 'name', 'type', 'description', 'coord_x', 'coord_y', 'visits', 'level', 'images']
+        fields = ['id', 'name', 'type', 'description', 'coord_x', 'coord_y', 'visits', 'xp_reward', 'level', 'images']
+        read_only_fields = ['visits', 'approved']
 
 
 class VisitSerializer(serializers.Serializer):
