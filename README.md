@@ -137,7 +137,8 @@ Filter Examples
 - Name contains “lib”: ?name__icontains=lib
 - Combine filters: ?type=inside&visits__gte=10
 
-### Add Place (Only Superusers)
+### Suggest a new place 
+requests for superusers are approved automatically, when users try to add a place it is not shown in searches until its approved.
 ```bash
 curl -X POST http://localhost:8000/api/places/ \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
@@ -148,8 +149,15 @@ curl -X POST http://localhost:8000/api/places/ \
     "description": "Main library",
     "coord_x": 12.34,
     "coord_y": 56.78,
-    "visits": 0
+    "level": 100,
+    "xp_reward": 35
   }'
+```
+
+### Approve suggestion of a new place
+```bash
+curl -X POST http://127.0.0.1:8000/api/places/<place_id>/approve/ \
+          -H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 
 ## Visit APIs (also increments the xp of user by amount specified by place)
