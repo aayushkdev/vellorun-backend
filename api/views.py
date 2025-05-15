@@ -6,6 +6,7 @@ from .serializers import RegisterSerializer, ProfileSerializer, PlaceSerializer,
 from .utils import IsSuperUserOrReadOnly, check_and_level_up
 from .models import CustomUser, Place, Visit
 from django_filters.rest_framework import DjangoFilterBackend
+from django.shortcuts import get_object_or_404
 
 
 class RegisterView(generics.CreateAPIView):
@@ -36,7 +37,10 @@ class PlaceListCreateView(generics.ListCreateAPIView):
     }   
 
     def get_queryset(self):
-        return Place.objects.filter(approved=True)
+        qs = Place.objects.all()
+        if not self.request.user.is_superuser:
+            qs = qs.filter(approved=True)
+        return qs
 
     def perform_create(self, serializer):
         if self.request.user.is_superuser:
@@ -59,7 +63,7 @@ class VisitPlaceView(APIView):
         serializer.is_valid(raise_exception=True)
 
         place_id = serializer.validated_data['place_id']
-        place = Place.objects.get(id=place_id)
+        place = get_object_or_404(Place, id=place_id)
         user = request.user
 
         visit, created = Visit.objects.get_or_create(user=user, place=place)
