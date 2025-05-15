@@ -46,11 +46,13 @@ class PlaceSerializer(serializers.ModelSerializer):
             PlaceImage.objects.create(place=place, **image_data)
         return place
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get('request')
+        if request and request.user.is_superuser:
+            data['approved'] = instance.approved
+        return data
+
 
 class VisitSerializer(serializers.Serializer):
     place_id = serializers.IntegerField()
-
-    def validate_place_id(self, value):
-        if not Place.objects.filter(id=value).exists():
-            raise serializers.ValidationError("Place does not exist.")
-        return value
