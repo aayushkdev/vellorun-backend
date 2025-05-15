@@ -1,0 +1,17 @@
+{
+  "builds": [
+    {
+      "src": "vellorun_backend/wsgi.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "vellorun_backend/wsgi.py"
+    }
+  ]
+}
