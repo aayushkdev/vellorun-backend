@@ -77,7 +77,35 @@ Response
 }
 ```
 
+
 ## Place APIs
+### Suggest a new place 
+requests for superusers are approved automatically, when users try to add a place it is not shown in searches until its approved.
+```bash
+curl -X POST http://localhost:8000/api/places/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Sample Place",
+    "type": "inside",
+    "description": "Test description",
+    "coord_x": 12.3456,
+    "coord_y": 78.9012,
+    "level": 1,
+    "xp_reward": 20,
+    "images": [
+      { "image_url": "https://example.com/img1.jpg" },
+      { "image_url": "https://example.com/img2.jpg" }
+    ]
+  }'
+```
+
+### Approve suggestion of a new place
+```bash
+curl -X POST http://127.0.0.1:8000/api/places/<place_id>/approve/ \
+          -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
 ### Get All Places
 ```bash
 curl -X GET http://localhost:8000/api/places/
@@ -109,6 +137,7 @@ Response
   }
 ]
 ```
+
 ### Filter Places
 ```bash
 curl -X GET "http://localhost:8000/api/places/?type=inside"
@@ -137,32 +166,6 @@ Filter Examples
 - Name contains “lib”: ?name__icontains=lib
 - Combine filters: ?type=inside&visits__gte=10
 
-### Suggest a new place 
-requests for superusers are approved automatically, when users try to add a place it is not shown in searches until its approved.
-```bash
-curl -X POST http://localhost:8000/api/places/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Sample Place",
-    "type": "inside",
-    "description": "Test description",
-    "coord_x": 12.3456,
-    "coord_y": 78.9012,
-    "level": 1,
-    "xp_reward": 20,
-    "images": [
-      { "image_url": "https://example.com/img1.jpg" },
-      { "image_url": "https://example.com/img2.jpg" }
-    ]
-  }'
-```
-
-### Approve suggestion of a new place
-```bash
-curl -X POST http://127.0.0.1:8000/api/places/<place_id>/approve/ \
-          -H "Authorization: Bearer <ACCESS_TOKEN>"
-```
 
 ## Visit APIs (also increments the xp of user by amount specified by place)
 
