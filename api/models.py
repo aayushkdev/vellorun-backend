@@ -28,6 +28,8 @@ class Place(models.Model):
     coord_x = models.FloatField()
     coord_y = models.FloatField()
     visits = models.PositiveIntegerField(default=0)
+    level = models.PositiveIntegerField(default=0)
+    xp_reward = models.IntegerField(default=10)
 
     def __str__(self):
         return self.name
@@ -39,3 +41,12 @@ class PlaceImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.place.name}"
+
+
+class Visit(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE)
+    visited_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'place')

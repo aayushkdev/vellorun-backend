@@ -1,9 +1,12 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import RegisterSerializer, ProfileSerializer, PlaceSerializer
-from .permissions import IsSuperUserOrReadOnly
-from .models import CustomUser, Place
+from .serializers import RegisterSerializer, ProfileSerializer, PlaceSerializer, VisitSerializer
+from .utils import IsSuperUserOrReadOnly, check_and_level_up
+from .models import CustomUser, Place, Visit
 from django_filters.rest_framework import DjangoFilterBackend
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
@@ -32,7 +35,45 @@ class PlaceListCreateView(generics.ListCreateAPIView):
         'coord_y': ['exact'],
     }   
 
+
 class PlaceDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Place.objects.all()
     serializer_class = PlaceSerializer
     permission_classes = [IsSuperUserOrReadOnly]
+
+
+class VisitPlaceView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = VisitSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        place_id = serializer.validated_data['place_id']
+        place = Place.objects.get(id=place_id)
+        user = request.user
+
+        visit, created = Visit.objects.get_or_create(user=user, place=place)
+
+        if not created:
+            return Response({
+                "message": "You have already visited this place.",
+                "place_name": place.name,
+                "user_xp": user.xp,
+                "user_level": user.level,
+                "total_visits_to_place": place.visits,
+            }, status=status.HTTP_200_OK)
+
+        place.visits += 1
+        user.xp += place.xp_reward
+        place.save()
+        check_and_level_up(user)
+        user.save()
+
+        return Response({
+            "message": "Place visited!",
+            "place_name": place.name,
+            "user_xp": user.xp,
+            "user_level": user.level,
+            "total_visits_to_place": place.visits,
+        }, status=status.HTTP_201_CREATED)

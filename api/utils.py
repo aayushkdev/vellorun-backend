@@ -1,5 +1,12 @@
 from rest_framework import permissions
 
+def check_and_level_up(user):
+    level_thresholds = [0, 100, 300, 600, 1000]
+    while user.level < len(level_thresholds) and user.xp >= level_thresholds[user.level]:
+        user.level += 1
+    user.save()
+
+
 class IsSuperUserOrReadOnly(permissions.BasePermission):
     """
     Custom permission:

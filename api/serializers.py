@@ -36,4 +36,13 @@ class PlaceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Place
-        fields = ['id', 'name', 'type', 'description', 'coord_x', 'coord_y', 'visits', 'images']
+        fields = ['id', 'name', 'type', 'description', 'coord_x', 'coord_y', 'visits', 'level', 'images']
+
+
+class VisitSerializer(serializers.Serializer):
+    place_id = serializers.IntegerField()
+
+    def validate_place_id(self, value):
+        if not Place.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Place does not exist.")
+        return value

@@ -51,12 +51,14 @@ curl -X POST http://localhost:8000/api/token/ \
 ## Place APIs
 ### Get All Places
 ```bash
-curl http://localhost:8000/api/places/
+curl -X GET http://localhost:8000/api/places/
 ```
 
 ### Filter Places
 ```bash
-http://localhost:8000/api/places?type=inside&visits__gte=100
+curl -X GET http://localhost:8000/api/places \
+     --data-urlencode "type=inside" \
+     --data-urlencode "visits__gte=100"
 ```
 Filter Examples
 - Inside places: ?type=inside
@@ -78,4 +80,37 @@ curl -X POST http://localhost:8000/api/places/ \
     "coord_y": 56.78,
     "visits": 0
   }'
+```
+
+## Visit APIs
+
+### Visit a place
+```bash
+curl -X POST http://localhost:8000/api/visit/ \
+     -H "Authorization: Bearer your-access-token" \
+     -H "Content-Type: application/json" \
+     -d '{"place_id": 2}'
+
+```
+
+response (if first time visit)
+```bash
+{
+  "message": "Place visited!",
+  "place_name": "Library",
+  "user_xp": 20,
+  "user_level": 1,
+  "total_visits_to_place": 1
+}
+```
+
+response (if already visited)
+```bash
+{
+  "message": "You have already visited this place.",
+  "place_name": "Library",
+  "user_xp": 20,
+  "user_level": 1,
+  "total_visits_to_place": 1
+}
 ```
