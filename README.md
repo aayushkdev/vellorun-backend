@@ -40,11 +40,41 @@ curl -X POST http://localhost:8000/api/token/ \
   -H "Content-Type: application/json" \
   -d '{"username": "user1", "password": "password123"}'
 ```
-### Response
+Response
 ```bash
 {
   "access": "JWT_ACCESS_TOKEN",
   "refresh": "JWT_REFRESH_TOKEN"
+}
+```
+
+### Refresh token
+```bash
+curl -X POST http://localhost:8000/api/token/refresh/ \
+     -H "Content-Type: application/json" \
+     -d '{"refresh": "your-refresh-token"}'
+```
+Response
+```bash
+{
+  "access":<ACCESS_TOKEN>
+}
+```
+
+### Fetch user profile
+```bash
+curl -X GET http://localhost:8000/api/user/profile/ \
+             -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+Response
+```bash
+{
+  "username": "vellorun",
+  "email": "test@gmail.com",
+  "avatar": "avatar3",
+  "xp": 20,
+  "level": 1,
+  "visible": true
 }
 ```
 
@@ -53,13 +83,54 @@ curl -X POST http://localhost:8000/api/token/ \
 ```bash
 curl -X GET http://localhost:8000/api/places/
 ```
-
+Response
+```bash
+[
+  {
+    "id": 1,
+    "name": "Library",
+    "type": "inside",
+    "description": "Main campus library",
+    "coord_x": 25.123,
+    "coord_y": 85.456,
+    "visits": 1,
+    "level": 0,
+    "images": []
+  },
+  {
+    "id": 2,
+    "name": "Taara maa",
+    "type": "outside",
+    "description": "A restraunt",
+    "coord_x": 22.123,
+    "coord_y": 83.456,
+    "visits": 101,
+    "level": 0,
+    "images": []
+  }
+]
+```
 ### Filter Places
 ```bash
-curl -X GET http://localhost:8000/api/places \
-     --data-urlencode "type=inside" \
-     --data-urlencode "visits__gte=100"
+curl -X GET "http://localhost:8000/api/places/?type=inside"
 ```
+Response
+```bash
+[
+  {
+    "id": 1,
+    "name": "Library",
+    "type": "inside",
+    "description": "Main campus library",
+    "coord_x": 25.123,
+    "coord_y": 85.456,
+    "visits": 1,
+    "level": 0,
+    "images": []
+  }
+]
+```
+
 Filter Examples
 - Inside places: ?type=inside
 - With >= 100 visits: ?visits__gte=100
@@ -82,7 +153,7 @@ curl -X POST http://localhost:8000/api/places/ \
   }'
 ```
 
-## Visit APIs
+## Visit APIs (also increments the xp of user by amount specified by place)
 
 ### Visit a place
 ```bash
