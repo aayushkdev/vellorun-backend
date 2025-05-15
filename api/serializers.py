@@ -32,12 +32,19 @@ class PlaceImageSerializer(serializers.ModelSerializer):
 
 
 class PlaceSerializer(serializers.ModelSerializer):
-    images = PlaceImageSerializer(many=True, read_only=True)
+    images = PlaceImageSerializer(many=True, required=False)
 
     class Meta:
         model = Place
         fields = ['id', 'name', 'type', 'description', 'coord_x', 'coord_y', 'visits', 'xp_reward', 'level', 'images']
         read_only_fields = ['visits', 'approved']
+
+    def create(self, validated_data):
+        images_data = validated_data.pop('images', [])
+        place = Place.objects.create(**validated_data)
+        for image_data in images_data:
+            PlaceImage.objects.create(place=place, **image_data)
+        return place
 
 
 class VisitSerializer(serializers.Serializer):

@@ -144,13 +144,17 @@ curl -X POST http://localhost:8000/api/places/ \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Library",
+    "name": "Sample Place",
     "type": "inside",
-    "description": "Main library",
-    "coord_x": 12.34,
-    "coord_y": 56.78,
-    "level": 100,
-    "xp_reward": 35
+    "description": "Test description",
+    "coord_x": 12.3456,
+    "coord_y": 78.9012,
+    "level": 1,
+    "xp_reward": 20,
+    "images": [
+      { "image_url": "https://example.com/img1.jpg" },
+      { "image_url": "https://example.com/img2.jpg" }
+    ]
   }'
 ```
 
@@ -169,26 +173,4 @@ curl -X POST http://localhost:8000/api/visit/ \
      -H "Content-Type: application/json" \
      -d '{"place_id": 2}'
 
-```
-
-response (if first time visit)
-```bash
-{
-  "message": "Place visited!",
-  "place_name": "Library",
-  "user_xp": 20,
-  "user_level": 1,
-  "total_visits_to_place": 1
-}
-```
-
-response (if already visited)
-```bash
-{
-  "message": "You have already visited this place.",
-  "place_name": "Library",
-  "user_xp": 20,
-  "user_level": 1,
-  "total_visits_to_place": 1
-}
 ```
