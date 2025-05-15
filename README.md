@@ -31,7 +31,7 @@ python manage.py runserver
 ```bash
 curl -X POST http://localhost:8000/api/register/ \
   -H "Content-Type: application/json" \
-  -d '{"username": "user1", "email": "user@example.com", "password": "password123"}'
+  -d '{"username": "user1", "password": "password123"}'
 ```
 
 ### Login
@@ -70,7 +70,6 @@ Response
 ```bash
 {
   "username": "vellorun",
-  "email": "test@gmail.com",
   "avatar": "avatar3",
   "xp": 20,
   "level": 1,

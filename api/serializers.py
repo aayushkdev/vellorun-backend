@@ -7,7 +7,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'password', 'avatar', 'xp', 'level', 'visible']
+        fields = ['username', 'password', 'avatar', 'xp', 'level', 'visible']
         read_only_fields = ['avatar', 'xp', 'level', 'visible']
 
     def create(self, validated_data):
@@ -22,7 +22,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'avatar', 'xp', 'level', 'visible']
+        fields = ['username', 'avatar', 'xp', 'level', 'visible']
 
 
 class PlaceImageSerializer(serializers.ModelSerializer):
