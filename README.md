@@ -27,18 +27,14 @@ python manage.py runserver
 
 
 ## Authentication API
-### Register
+### Register/Login
+creates a new account if user does not exist otherwise signs in automatically if user exists
 ```bash
-curl -X POST http://localhost:8000/api/register/ \
+curl -X POST https://your-backend.com/api/auth/google/ \
   -H "Content-Type: application/json" \
-  -d '{"username": "user1", "password": "password123"}'
-```
-
-### Login
-```bash
-curl -X POST http://localhost:8000/api/token/ \
-  -H "Content-Type: application/json" \
-  -d '{"username": "user1", "password": "password123"}'
+  -d '{
+    "id_token": "GOOGLE_ID_TOKEN"
+}'
 ```
 Response
 ```bash
@@ -52,7 +48,7 @@ Response
 ```bash
 curl -X POST http://localhost:8000/api/token/refresh/ \
      -H "Content-Type: application/json" \
-     -d '{"refresh": "your-refresh-token"}'
+     -d '{"refresh": "<REFRESH_TOKEN>"}'
 ```
 Response
 ```bash
@@ -172,7 +168,7 @@ Filter Examples
 ### Visit a place
 ```bash
 curl -X POST http://localhost:8000/api/visit/ \
-     -H "Authorization: Bearer your-access-token" \
+     -H "Authorization: Bearer <ACCESS_TOKEN>" \
      -H "Content-Type: application/json" \
      -d '{"place_id": 2}'
 

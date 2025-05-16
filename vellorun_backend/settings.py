@@ -22,6 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "unsafe-dev-key")
 DEBUG = os.getenv("DEBUG", "True") == "True"
+DATABASE_URL = os.getenv("DATABASE_URL")
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+
 ALLOWED_HOSTS = ['*']
 
 
@@ -75,7 +78,6 @@ WSGI_APPLICATION = 'vellorun_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASE_URL = os.getenv("DATABASE_URL")
 DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL)
     if DATABASE_URL else {
