@@ -1,13 +1,14 @@
 from rest_framework import serializers
-from .models import CustomUser, Place, PlaceImage
 from django.contrib.auth.password_validation import validate_password
+from .models import CustomUser, Place, PlaceImage
+
+class GoogleAuthSerializer(serializers.Serializer):
+    id_token = serializers.CharField()
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, validators=[validate_password])
-
     class Meta:
         model = CustomUser
-        fields = ['username', 'password', 'avatar', 'xp', 'level', 'visible']
+        fields = ['username', 'email', 'avatar', 'xp', 'level', 'visible']
         read_only_fields = ['avatar', 'xp', 'level']
 
     def create(self, validated_data):
@@ -22,7 +23,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['username', 'avatar', 'xp', 'level', 'visible']
+        fields = ['username', 'email', 'avatar', 'xp', 'level', 'visible']
         read_only_fields = ['avatar', 'xp', 'level']
 
 

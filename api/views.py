@@ -1,18 +1,45 @@
+import requests
 from rest_framework import generics, permissions, status
-from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import RegisterSerializer, ProfileSerializer, PlaceSerializer, VisitSerializer
-from .utils import IsSuperUserOrReadOnly, check_and_level_up
-from .models import CustomUser, Place, Visit
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
+from django.conf import settings
+from .serializers import RegisterSerializer, ProfileSerializer, PlaceSerializer, VisitSerializer, GoogleAuthSerializer
+from .utils import IsSuperUserOrReadOnly, check_and_level_up
+from .models import CustomUser, Place, Visit
 
-
-class RegisterView(generics.CreateAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = RegisterSerializer
+class GoogleAuthView(APIView):
     permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = GoogleAuthSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        id_token = serializer.validated_data["id_token"]
+
+        response = requests.get(f"https://oauth2.googleapis.com/tokeninfo?id_token={id_token}")
+        if response.status_code != 200:
+            return Response({"error": "Invalid Google ID token"}, status=400)
+
+        payload = response.json()
+
+        if payload["aud"] != settings.GOOGLE_CLIENT_ID:
+            return Response({"error": "Invalid audience"}, status=400)
+
+        email = payload["email"]
+        username = payload.get("name", email.split("@")[0])
+
+        user, created = CustomUser.objects.get_or_create(email=email, defaults={"username": username})
+        if created:
+            user.save()
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        })
 
 
 class ProfileView(generics.RetrieveUpdateAPIView):
