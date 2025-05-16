@@ -21,10 +21,21 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    visited_places = serializers.SerializerMethodField()
+    contributed_places = serializers.SerializerMethodField()
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'avatar', 'xp', 'level', 'visible']
-        read_only_fields = ['avatar', 'xp', 'level']
+        fields = ['username', 'email', 'avatar', 'xp', 'level', 'visible', 'visited_places', 'contributed_places']
+        read_only_fields = ['avatar', 'xp', 'level', 'visited_places', 'contributed_places']
+    
+    def get_visited_places(self, user):
+        places = Place.objects.filter(visit__user=user).distinct()
+        return PlaceSerializer(places, many=True, context=self.context).data
+
+    def get_contributed_places(self, user):
+        places = Place.objects.filter(created_by=user)
+        return PlaceSerializer(places, many=True, context=self.context).data
+
 
 
 class PlaceImageSerializer(serializers.ModelSerializer):

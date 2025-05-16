@@ -79,10 +79,9 @@ class PlaceListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         if self.request.user.is_superuser:
-            serializer.save(approved=True)
+            serializer.save(created_by=self.request.user, approved=True)
         else:
-            serializer.save(approved=True)
-
+            serializer.save(created_by=self.request.user, approved=False)
 
 class PlaceDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Place.objects.all()
