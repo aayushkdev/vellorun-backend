@@ -7,6 +7,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.db.models import Q
 from .serializers import RegisterSerializer, ProfileSerializer, PlaceSerializer, VisitSerializer, GoogleAuthSerializer
 from .utils import IsSuperUserOrReadOnly, check_and_level_up
 from .models import CustomUser, Place, Visit
@@ -69,13 +70,18 @@ class PlaceListCreateView(generics.ListCreateAPIView):
         qs = Place.objects.all()
         if not self.request.user.is_superuser:
             qs = qs.filter(approved=True)
+
+        tags = self.request.query_params.getlist('tags')
+        if tags:
+            qs = qs.filter(tags__name__in=tags).distinct()
+
         return qs
 
     def perform_create(self, serializer):
         if self.request.user.is_superuser:
             serializer.save(approved=True)
         else:
-            serializer.save(approved=False)
+            serializer.save(approved=True)
 
 
 class PlaceDetailView(generics.RetrieveUpdateDestroyAPIView):

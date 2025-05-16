@@ -89,6 +89,7 @@ curl -X POST http://localhost:8000/api/places/ \
     "coord_y": 78.9012,
     "level": 1,
     "xp_reward": 20,
+    "tags": ["hotel", "top10"],
     "images": [
       { "image_url": "https://example.com/img1.jpg" },
       { "image_url": "https://example.com/img2.jpg" }
@@ -117,7 +118,9 @@ Response
     "coord_x": 25.123,
     "coord_y": 85.456,
     "visits": 1,
-    "level": 0,
+    "level": 1,
+    "xp_reward": 20,
+    "tags": ["campusbuilding", "quiet"],
     "images": []
   },
   {
@@ -128,7 +131,9 @@ Response
     "coord_x": 22.123,
     "coord_y": 83.456,
     "visits": 101,
-    "level": 0,
+    "level": 1,
+    "xp_reward": 20,
+    "tags": ["hotel", "top10"],
     "images": []
   }
 ]
@@ -157,6 +162,7 @@ Response
 
 Filter Examples
 - Inside places: ?type=inside
+- tags: ?tags=top10&tags=hotel
 - With >= 100 visits: ?visits__gte=100
 - With <= 100 visits: ?visits__lte=100
 - Name contains “lib”: ?name__icontains=lib
