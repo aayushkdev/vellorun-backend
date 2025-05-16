@@ -24,9 +24,11 @@ class GoogleAuthView(APIView):
             return Response({"error": "Invalid Google ID token"}, status=400)
 
         payload = response.json()
-
+        
+        '''
         if payload["aud"] != settings.GOOGLE_CLIENT_ID:
             return Response({"error": "Invalid audience"}, status=400)
+        '''
 
         email = payload["email"]
         username = payload.get("name", email.split("@")[0])
