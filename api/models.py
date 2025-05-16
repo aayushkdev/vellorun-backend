@@ -16,7 +16,16 @@ class CustomUser(AbstractUser):
         super().save(*args, **kwargs)
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Place(models.Model):
+    tags = models.ManyToManyField(Tag, related_name='places', blank=True)
+
     TYPE_CHOICES = [
         ('inside', 'Inside'),
         ('outside', 'Outside'),
