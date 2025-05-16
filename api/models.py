@@ -10,6 +10,14 @@ class CustomUser(AbstractUser):
     level = models.IntegerField(default=1)
     visible = models.BooleanField(default=True)
 
+    @property
+    def visited_places(self):
+        return Place.objects.filter(visit__user=self).distinct()
+
+    @property
+    def contributed_places(self):
+        return self.contributed_places.all()
+
     def save(self, *args, **kwargs):
         if not self.avatar:
             self.avatar = random.choice(AVATARS)
@@ -25,6 +33,7 @@ class Tag(models.Model):
 
 class Place(models.Model):
     tags = models.ManyToManyField(Tag, related_name='places', blank=True)
+    created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='contributed_places')
 
     TYPE_CHOICES = [
         ('inside', 'Inside'),

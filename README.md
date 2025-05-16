@@ -70,6 +70,8 @@ Response
   "xp": 20,
   "level": 1,
   "visible": true
+  "visited_places": [{...}, {...}]
+  "contributed_places": [{...}, {...}]
 }
 ```
 
