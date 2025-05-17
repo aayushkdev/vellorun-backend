@@ -8,9 +8,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.db.models import Q
-from .serializers import RegisterSerializer, ProfileSerializer, PlaceSerializer, VisitSerializer, GoogleAuthSerializer
+from .serializers import RegisterSerializer, ProfileSerializer, PlaceSerializer, VisitSerializer, GoogleAuthSerializer, SavedPlaceSerializer
 from .utils import IsSuperUserOrReadOnly, check_and_level_up
-from .models import CustomUser, Place, Visit
+from .models import CustomUser, Place, Visit, SavedPlace
 
 class GoogleAuthView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -142,3 +142,37 @@ class ApprovePlaceView(APIView):
         place.save()
 
         return Response({'message': f'Place "{place.name}" has been approved.'}, status=status.HTTP_200_OK)
+
+
+class SavedPlaceView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        saved = SavedPlace.objects.filter(user=request.user)
+        serializer = SavedPlaceSerializer(saved, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = SavedPlaceSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        place_id = serializer.validated_data['place_id']
+        place = get_object_or_404(Place, id=place_id)
+        saved_place, created = SavedPlace.objects.get_or_create(user=request.user, place=place)
+
+        if not created:
+            return Response({'message': 'Place already saved.'}, status=200)
+
+        return Response({'message': 'Place saved successfully.'}, status=201)
+
+    def delete(self, request):
+        place_id = request.data.get('place_id')
+        if not place_id:
+            return Response({'error': 'place_id is required.'}, status=400)
+
+        try:
+            saved = SavedPlace.objects.get(user=request.user, place_id=place_id)
+            saved.delete()
+            return Response({'message': 'Place removed from saved list.'}, status=200)
+        except SavedPlace.DoesNotExist:
+            return Response({'error': 'Place not found in your saved list.'}, status=404)

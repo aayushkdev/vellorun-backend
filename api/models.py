@@ -69,3 +69,12 @@ class Visit(models.Model):
 
     class Meta:
         unique_together = ('user', 'place')
+
+
+class SavedPlace(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='saved_places')
+    place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name='saved_by')
+    saved_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'place')
