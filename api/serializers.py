@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-from .models import CustomUser, Place, PlaceImage, Tag
+from .models import CustomUser, Place, PlaceImage, Tag, SavedPlace
 
 class GoogleAuthSerializer(serializers.Serializer):
     id_token = serializers.CharField()
@@ -25,8 +25,8 @@ class ProfileSerializer(serializers.ModelSerializer):
     contributed_places = serializers.SerializerMethodField()
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'avatar', 'xp', 'level', 'visible', 'visited_places', 'contributed_places']
-        read_only_fields = ['avatar', 'xp', 'level', 'visited_places', 'contributed_places']
+        fields = ['username', 'email', 'avatar', 'xp', 'level', 'visible', 'visited_places', 'contributed_places', 'saved_places']
+        read_only_fields = ['avatar', 'xp', 'level', 'visited_places', 'contributed_places', 'saved_places']
     
     def get_visited_places(self, user):
         places = Place.objects.filter(visit__user=user).distinct()
@@ -36,6 +36,9 @@ class ProfileSerializer(serializers.ModelSerializer):
         places = Place.objects.filter(created_by=user)
         return PlaceSerializer(places, many=True, context=self.context).data
 
+    def get_saved_places(self, user):
+        saved = SavedPlace.objects.filter(user=user)
+        return SavedPlaceSerializer(saved, many=True, context=self.context).data
 
 
 class PlaceImageSerializer(serializers.ModelSerializer):
@@ -81,3 +84,12 @@ class PlaceSerializer(serializers.ModelSerializer):
 
 class VisitSerializer(serializers.Serializer):
     place_id = serializers.IntegerField()
+
+
+class SavedPlaceSerializer(serializers.ModelSerializer):
+    place = PlaceSerializer(read_only=True)
+    place_id = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = SavedPlace
+        fields = ['place', 'place_id', 'saved_at'] 
