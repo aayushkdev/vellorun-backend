@@ -30,7 +30,7 @@ python manage.py runserver
 ### Register/Login
 creates a new account if user does not exist otherwise signs in automatically if user exists
 ```bash
-curl -X POST https://your-backend.com/api/auth/google/ \
+curl -X POST https://vellorun-backend.vercel.app/api/auth/google/ \
   -H "Content-Type: application/json" \
   -d '{
     "id_token": "GOOGLE_ID_TOKEN"
@@ -46,7 +46,7 @@ Response
 
 ### Refresh token
 ```bash
-curl -X POST http://localhost:8000/api/token/refresh/ \
+curl -X POST https://vellorun-backend.vercel.app/api/token/refresh/ \
      -H "Content-Type: application/json" \
      -d '{"refresh": "<REFRESH_TOKEN>"}'
 ```
@@ -59,7 +59,7 @@ Response
 
 ### Fetch user profile
 ```bash
-curl -X GET http://localhost:8000/api/user/profile/ \
+curl -X GET https://vellorun-backend.vercel.app/api/user/profile/ \
              -H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 Response
@@ -80,7 +80,7 @@ Response
 ### Suggest a new place 
 requests for superusers are approved automatically, when users try to add a place it is not shown in searches until its approved.
 ```bash
-curl -X POST http://localhost:8000/api/places/ \
+curl -X POST https://vellorun-backend.vercel.app/api/places/ \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -101,13 +101,13 @@ curl -X POST http://localhost:8000/api/places/ \
 
 ### Approve suggestion of a new place
 ```bash
-curl -X POST http://127.0.0.1:8000/api/places/<place_id>/approve/ \
+curl -X POST https://vellorun-backend.vercel.app/api/places/<place_id>/approve/ \
           -H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 
 ### Get All Places
 ```bash
-curl -X GET http://localhost:8000/api/places/
+curl -X GET https://vellorun-backend.vercel.app/api/places/
 ```
 Response
 ```bash
@@ -143,7 +143,7 @@ Response
 
 ### Filter Places
 ```bash
-curl -X GET "http://localhost:8000/api/places/?type=inside"
+curl -X GET "https://vellorun-backend.vercel.app/api/places/?type=inside"
 ```
 Response
 ```bash
@@ -175,7 +175,7 @@ Filter Examples
 
 ### Visit a place
 ```bash
-curl -X POST http://localhost:8000/api/visit/ \
+curl -X POST https://vellorun-backend.vercel.app/api/visit/ \
      -H "Authorization: Bearer <ACCESS_TOKEN>" \
      -H "Content-Type: application/json" \
      -d '{"place_id": 2}'
