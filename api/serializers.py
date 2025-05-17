@@ -25,8 +25,8 @@ class ProfileSerializer(serializers.ModelSerializer):
     contributed_places = serializers.SerializerMethodField()
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'avatar', 'xp', 'level', 'visible', 'visited_places', 'contributed_places', 'saved_places']
-        read_only_fields = ['avatar', 'xp', 'level', 'visited_places', 'contributed_places', 'saved_places']
+        fields = ['username', 'email', 'avatar', 'xp', 'level', 'visible', 'coord_x', 'coord_y', 'visited_places', 'contributed_places', 'saved_places']
+        read_only_fields = ['username', 'xp', 'level', 'visited_places', 'contributed_places', 'saved_places']
     
     def get_visited_places(self, user):
         places = Place.objects.filter(visit__user=user).distinct()

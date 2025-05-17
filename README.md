@@ -57,6 +57,8 @@ Response
 }
 ```
 
+### Users api
+
 ### Fetch user profile
 ```bash
 curl -X GET https://vellorun-backend.vercel.app/api/user/profile/ \
@@ -66,17 +68,30 @@ Response
 ```bash
 {
   "username": "vellorun",
+  "email": "test@gmail.com",
   "avatar": "avatar3",
   "xp": 20,
   "level": 1,
-  "visible": true
-  "visited_places": [{...}, {...}]
-  "contributed_places": [{...}, {...}]
+  "visible": true,
+  "coord_x": 0.0,
+  "coord_y": 0.0,
+  "visited_places": [{...}, {...}],
+  "contributed_places": [{...}, {...}],
+  "saved_places": [{...}, {...}],
 }
 ```
 
+### Modify user profile
+you can modify coordinates, visibility, username and avatar
+```bash
+curl -X PATCH https://vellorun-backend.vercel.app/api/user/profile/ \
+          -H "Authorization: Bearer <ACCESS_TOKEN>" \
+          -H "Content-Type: application/json" \
+          -d '{"visible": false}'
+```
 
-## Place APIs
+
+## Place suggestion APIs
 ### Suggest a new place 
 requests for superusers are approved automatically, when users try to add a place it is not shown in searches until its approved.
 ```bash
@@ -105,6 +120,7 @@ curl -X POST https://vellorun-backend.vercel.app/api/places/<place_id>/approve/ 
           -H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 
+## Place APIs
 ### Get All Places
 ```bash
 curl -X GET https://vellorun-backend.vercel.app/api/places/
@@ -170,6 +186,28 @@ Filter Examples
 - Name contains “lib”: ?name__icontains=lib
 - Combine filters: ?type=inside&visits__gte=10
 
+## Save places APIs
+### Save a place
+```bash
+curl -X POST https://vellorun-backend.vercel.app/saved/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"place_id": 1}'
+```
+
+### Delete a saved place
+```bash
+curl -X DELETE https://vellorun-backend.vercel.app/saved/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"place_id": 1}'
+```
+
+### Fetch saved places
+```bash
+curl -X GET https://vellorun-backend.vercel.app/saved/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+```
 
 ## Visit APIs (also increments the xp of user by amount specified by place)
 
