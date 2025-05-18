@@ -2,13 +2,12 @@ import random
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-AVATARS = ["avatar1", "avatar2", "avatar3", "avatar4"]
-
 class CustomUser(AbstractUser):
-    avatar = models.CharField(max_length=100, blank=True)
+    avatar = models.IntegerField(blank=True, null=True)
     xp = models.IntegerField(default=0)
     level = models.IntegerField(default=1)
     visible = models.BooleanField(default=True)
+    online = models.BooleanField(default=True)
     coord_x = models.FloatField(default=0)
     coord_y = models.FloatField(default=0)
 
@@ -22,7 +21,7 @@ class CustomUser(AbstractUser):
 
     def save(self, *args, **kwargs):
         if not self.avatar:
-            self.avatar = random.choice(AVATARS)
+            self.avatar = random.randint(0, 3)
         super().save(*args, **kwargs)
 
 

@@ -54,6 +54,7 @@ Response
 ```bash
 {
   "access":<ACCESS_TOKEN>
+  "refresh":<REFRESH_TOKEN>
 }
 ```
 
@@ -69,10 +70,11 @@ Response
 {
   "username": "vellorun",
   "email": "test@gmail.com",
-  "avatar": "avatar3",
+  "avatar": 2,
   "xp": 20,
   "level": 1,
   "visible": true,
+  "online": true,
   "coord_x": 0.0,
   "coord_y": 0.0,
   "visited_places": [{...}, {...}],
@@ -82,7 +84,7 @@ Response
 ```
 
 ### Modify user profile
-you can modify coordinates, visibility, username and avatar
+you can modify coordinates, visibility, username, avatar and online status
 ```bash
 curl -X PATCH https://vellorun-backend.vercel.app/api/user/profile/ \
           -H "Authorization: Bearer <ACCESS_TOKEN>" \
@@ -90,6 +92,30 @@ curl -X PATCH https://vellorun-backend.vercel.app/api/user/profile/ \
           -d '{"visible": false}'
 ```
 
+### fetch all online users
+```bash
+curl -X GET http://localhost:8000/api/user/online/
+```
+Response
+```bash
+[
+  {
+  "username": "vellorun",
+  "email": "test@gmail.com",
+  "avatar": "avatar3",
+  "xp": 20,
+  "level": 1,
+  "visible": true,
+  "online": true,
+  "coord_x": 0.0,
+  "coord_y": 0.0,
+  "visited_places": [{...}, {...}],
+  "contributed_places": [{...}, {...}],
+  "saved_places": [{...}, {...}],
+  },
+  ...
+]
+```
 
 ## Place suggestion APIs
 ### Suggest a new place 

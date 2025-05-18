@@ -176,3 +176,10 @@ class SavedPlaceView(APIView):
             return Response({'message': 'Place removed from saved list.'}, status=200)
         except SavedPlace.DoesNotExist:
             return Response({'error': 'Place not found in your saved list.'}, status=404)
+
+
+class VisibleUsersView(generics.ListAPIView):
+    serializer_class = ProfileSerializer
+
+    def get_queryset(self):
+        return CustomUser.objects.filter(online=True)
