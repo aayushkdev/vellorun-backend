@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 def check_and_level_up(user):
-    if user.xp%10 == 0:
+    if user.xp%100 == 0:
         user.level += 1
     user.save()
 
