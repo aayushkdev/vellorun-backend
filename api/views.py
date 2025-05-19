@@ -63,6 +63,7 @@ class PlaceListCreateView(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = {
         'type': ['exact'],
+        "id": ['exact'],
         'name': ['icontains'],
         'visits': ['exact', 'gte', 'lte'],
         'coord_x': ['exact'],
@@ -151,9 +152,8 @@ class SavedPlaceView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        saved = SavedPlace.objects.filter(user=request.user)
-        serializer = SavedPlaceSerializer(saved, many=True, context={'request': request})
-        return Response(serializer.data)
+        place_ids = SavedPlace.objects.filter(user=request.user).values_list('place_id', flat=True)
+        return Response({"saved_place_ids": list(place_ids)})
 
     def post(self, request):
         serializer = SavedPlaceSerializer(data=request.data)
@@ -232,24 +232,20 @@ class SuggestedPlacesView(APIView):
         except ValueError:
             return Response({"error": "Invalid ID format returned from LLM"}, status=500)
 
-        suggested_places = Place.objects.filter(id__in=suggested_ids, approved=True)
-        serialized = PlaceSerializer(suggested_places, many=True)
-        return Response({"suggestions": serialized.data})
+        return Response({"suggestions": suggested_ids})
 
 
 class ContributedPlacesView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        places = Place.objects.filter(created_by=request.user)
-        serializer = PlaceSerializer(places, many=True, context={'request': request})
-        return Response(serializer.data)
+        place_ids = Place.objects.filter(created_by=request.user).values_list('id', flat=True)
+        return Response({"contributed_place_ids": list(place_ids)})
 
 
 class VisitedPlacesView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        places = Place.objects.filter(visit__user=request.user).distinct()
-        serializer = PlaceSerializer(places, many=True, context={'request': request})
-        return Response(serializer.data)
+        place_ids = Place.objects.filter(visit__user=request.user).values_list('id', flat=True).distinct()
+        return Response({"visited_place_ids": list(place_ids)})
