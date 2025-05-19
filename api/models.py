@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
+    username = models.CharField(max_length=150, blank=True, null=True, unique=False)  # <== FIX HERE
+    email = models.EmailField(unique=True)
+
     avatar = models.IntegerField(blank=True, null=True)
     xp = models.IntegerField(default=0)
     level = models.IntegerField(default=1)
@@ -9,6 +12,9 @@ class CustomUser(AbstractUser):
     online = models.BooleanField(default=True)
     coord_x = models.FloatField(default=0)
     coord_y = models.FloatField(default=0)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
 
 
 class Tag(models.Model):
@@ -30,11 +36,11 @@ class Place(models.Model):
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     description = models.TextField(blank=True)
-    category = models.CharField(max_length=69)
+    category = models.CharField(max_length=69, default="campus")
     coord_x = models.FloatField()
     coord_y = models.FloatField()
     visits = models.PositiveIntegerField(default=0)
-    level = models.PositiveIntegerField(default=0)
+    level = models.PositiveIntegerField(default=1)
     xp_reward = models.IntegerField(default=20)
     approved = models.BooleanField(default=False)
 
