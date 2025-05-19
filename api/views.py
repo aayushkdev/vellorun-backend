@@ -249,3 +249,21 @@ class VisitedPlacesView(APIView):
     def get(self, request):
         place_ids = Place.objects.filter(visit__user=request.user).values_list('id', flat=True).distinct()
         return Response({"visited_place_ids": list(place_ids)})
+
+
+class LeaderboardView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get(self, request):
+        users = CustomUser.objects.order_by('-level', '-xp')[:100]
+        data = []
+        for rank, user in enumerate(users, start=1):
+            data.append({
+                'rank': rank,
+                'id': user.id,
+                'username': user.username,
+                'level': user.level,
+                'xp': user.xp,
+                'avatar': user.avatar,
+            })
+        return Response(data)

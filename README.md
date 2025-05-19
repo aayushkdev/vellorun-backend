@@ -106,9 +106,6 @@ Response
   "online": true,
   "coord_x": 0.0,
   "coord_y": 0.0,
-  "visited_places": [{...}, {...}],
-  "contributed_places": [{...}, {...}],
-  "saved_places": [{...}, {...}],
   },
   ...
 ]
