@@ -93,3 +93,7 @@ class SavedPlaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = SavedPlace
         fields = ['place', 'place_id', 'saved_at'] 
+
+
+class SuggestedPlaceSerializer(serializers.Serializer):
+    suggestions = serializers.CharField()

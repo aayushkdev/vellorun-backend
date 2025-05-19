@@ -25,6 +25,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "unsafe-dev-key")
 DEBUG = os.getenv("DEBUG", "True") == "True"
 DATABASE_URL = os.getenv("DATABASE_URL")
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 ALLOWED_HOSTS = ['*']
 

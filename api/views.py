@@ -1,4 +1,5 @@
 import requests
+from collections import Counter
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -8,9 +9,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.db.models import Q
-from .serializers import RegisterSerializer, ProfileSerializer, PlaceSerializer, VisitSerializer, GoogleAuthSerializer, SavedPlaceSerializer
+from .serializers import RegisterSerializer, ProfileSerializer, PlaceSerializer, VisitSerializer, GoogleAuthSerializer, SavedPlaceSerializer, SuggestedPlaceSerializer
 from .utils import IsSuperUserOrReadOnly, check_and_level_up
 from .models import CustomUser, Place, Visit, SavedPlace
+from .suggestions import get_place_recommendations
 
 class GoogleAuthView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -81,7 +83,7 @@ class PlaceListCreateView(generics.ListCreateAPIView):
         if self.request.user.is_superuser:
             serializer.save(created_by=self.request.user, approved=True)
         else:
-            serializer.save(created_by=self.request.user, approved=False)
+            serializer.save(created_by=self.request.user, approved=True)
 
 class PlaceDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Place.objects.all()
@@ -183,3 +185,52 @@ class VisibleUsersView(generics.ListAPIView):
 
     def get_queryset(self):
         return CustomUser.objects.filter(online=True)
+
+
+class SuggestedPlacesView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        api_key = settings.OPENROUTER_API_KEY
+
+        visited_places = Place.objects.filter(visit__user=user, approved=True).prefetch_related("tags")
+        visited_place_ids = visited_places.values_list("id", flat=True)
+
+        if visited_places.exists():
+            tag_counts = Counter(
+                tag.name
+                for place in visited_places
+                for tag in place.tags.all()
+            )
+            top_tags = [tag for tag, _ in tag_counts.most_common(3)]
+        else:
+            top_tags = list(
+                Tag.objects.annotate(num_places=Count("places"))
+                .order_by("-num_places")
+                .values_list("name", flat=True)[:3]
+            )
+
+        unvisited_places = Place.objects.filter(approved=True).exclude(id__in=visited_place_ids).prefetch_related("tags")
+
+        place_data = [
+            {
+                "id": place.id,
+                "name": place.name,
+                "description": place.description,
+                "tags": [tag.name for tag in place.tags.all()],
+                "visits": place.visits,
+                "approved": place.approved
+            }
+            for place in unvisited_places
+        ]
+
+        suggestions = get_place_recommendations(place_data, top_tags, api_key)
+        try:
+            suggested_ids = [int(pid.strip()) for pid in suggestions.split(",") if pid.strip().isdigit()]
+        except ValueError:
+            return Response({"error": "Invalid ID format returned from LLM"}, status=500)
+
+        suggested_places = Place.objects.filter(id__in=suggested_ids, approved=True)
+        serialized = PlaceSerializer(suggested_places, many=True)
+        return Response({"suggestions": serialized.data})
