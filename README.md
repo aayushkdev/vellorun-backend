@@ -242,6 +242,7 @@ Response
 ```
 
 Filter Examples
+- id of a place: ?id=1
 - Inside places: ?type=inside
 - tags: ?tags=top10&tags=hotel
 - With >= 100 visits: ?visits__gte=100
