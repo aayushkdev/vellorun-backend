@@ -41,7 +41,7 @@ class PlaceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Place
-        fields = ['id', 'name', 'type', 'description', 'coord_x', 'coord_y', 'visits', 'xp_reward', 'level', 'tags', 'images']
+        fields = ['id', 'name', 'type', 'description', 'category', 'coord_x', 'coord_y', 'visits', 'xp_reward', 'level', 'tags', 'images']
         read_only_fields = ['visits', 'approved']
 
     def create(self, validated_data):

@@ -121,6 +121,8 @@ class VisitPlaceView(APIView):
         check_and_level_up(user)
         user.save()
 
+        update_user_badges(user)
+
         return Response({
             "message": "Place visited!",
             "place_name": place.name,
