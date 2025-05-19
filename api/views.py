@@ -37,7 +37,7 @@ class GoogleAuthView(APIView):
         email = payload["email"]
         username = payload.get("name", email.split("@")[0])
 
-        user, created = CustomUser.objects.get_or_create(email=email, defaults={"username": username, "avatar": randint(0, 3)})
+        user, created = CustomUser.objects.get_or_create(email=email, defaults={"username": username, "avatar": randint(0, 9)})
         if created:
             user.save()
 
