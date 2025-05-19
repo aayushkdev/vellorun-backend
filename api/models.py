@@ -1,4 +1,3 @@
-import random
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -10,19 +9,6 @@ class CustomUser(AbstractUser):
     online = models.BooleanField(default=True)
     coord_x = models.FloatField(default=0)
     coord_y = models.FloatField(default=0)
-
-    @property
-    def visited_places(self):
-        return Place.objects.filter(visit__user=self).distinct()
-
-    @property
-    def contributed_places(self):
-        return self.contributed_places.all()
-
-    def save(self, *args, **kwargs):
-        if not self.avatar:
-            self.avatar = random.randint(0, 3)
-        super().save(*args, **kwargs)
 
 
 class Tag(models.Model):

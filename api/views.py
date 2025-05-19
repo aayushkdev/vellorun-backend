@@ -1,4 +1,5 @@
 import requests
+from random import randint
 from collections import Counter
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
@@ -36,7 +37,7 @@ class GoogleAuthView(APIView):
         email = payload["email"]
         username = payload.get("name", email.split("@")[0])
 
-        user, created = CustomUser.objects.get_or_create(email=email, defaults={"username": username})
+        user, created = CustomUser.objects.get_or_create(email=email, defaults={"username": username, "avatar": randint(0, 3)})
         if created:
             user.save()
 
@@ -234,3 +235,21 @@ class SuggestedPlacesView(APIView):
         suggested_places = Place.objects.filter(id__in=suggested_ids, approved=True)
         serialized = PlaceSerializer(suggested_places, many=True)
         return Response({"suggestions": serialized.data})
+
+
+class ContributedPlacesView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        places = Place.objects.filter(created_by=request.user)
+        serializer = PlaceSerializer(places, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
+class VisitedPlacesView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        places = Place.objects.filter(visit__user=request.user).distinct()
+        serializer = PlaceSerializer(places, many=True, context={'request': request})
+        return Response(serializer.data)
