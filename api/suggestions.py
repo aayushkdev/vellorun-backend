@@ -1,7 +1,7 @@
 import json
 from openai import OpenAI
 
-def get_place_recommendations(data, selected_categories, api_key, model="meta-llama/llama-3.3-8b-instruct:free", num_recommendations=1):
+def get_place_recommendations(data, selected_categories, api_key, model="meta-llama/llama-3.3-8b-instruct:free", num_recommendations=3):
     """
     Get place recommendations based on selected categories using an LLM.
     

@@ -77,9 +77,6 @@ Response
   "online": true,
   "coord_x": 0.0,
   "coord_y": 0.0,
-  "visited_places": [{...}, {...}],
-  "contributed_places": [{...}, {...}],
-  "saved_places": [{...}, {...}],
 }
 ```
 
@@ -115,6 +112,40 @@ Response
   },
   ...
 ]
+```
+
+### fetch visited places
+```bash
+curl -X GET http://localhost:8000/api/places/visited/ \
+             -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### fetch contributed places
+```bash
+curl -X GET http://localhost:8000/api/places/contributed/ \
+             -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### Save a place
+```bash
+curl -X POST https://vellorun-backend.vercel.app/api/places/saved/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"place_id": 1}'
+```
+
+### Delete a saved place
+```bash
+curl -X DELETE https://vellorun-backend.vercel.app/api/places/saved/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"place_id": 1}'
+```
+
+### Fetch saved places
+```bash
+curl -X GET https://vellorun-backend.vercel.app/api/places/saved/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
 ```
 
 ## Place suggestion APIs
@@ -217,29 +248,6 @@ Filter Examples
 - With <= 100 visits: ?visits__lte=100
 - Name contains “lib”: ?name__icontains=lib
 - Combine filters: ?type=inside&visits__gte=10
-
-## Save places APIs
-### Save a place
-```bash
-curl -X POST https://vellorun-backend.vercel.app/saved/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"place_id": 1}'
-```
-
-### Delete a saved place
-```bash
-curl -X DELETE https://vellorun-backend.vercel.app/saved/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"place_id": 1}'
-```
-
-### Fetch saved places
-```bash
-curl -X GET https://vellorun-backend.vercel.app/saved/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-```
 
 ## Visit APIs (also increments the xp of user by amount specified by place)
 
