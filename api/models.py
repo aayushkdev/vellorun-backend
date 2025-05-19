@@ -30,11 +30,12 @@ class Place(models.Model):
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     description = models.TextField(blank=True)
+    category = models.CharField(max_length=69)
     coord_x = models.FloatField()
     coord_y = models.FloatField()
     visits = models.PositiveIntegerField(default=0)
     level = models.PositiveIntegerField(default=0)
-    xp_reward = models.IntegerField(default=10)
+    xp_reward = models.IntegerField(default=20)
     approved = models.BooleanField(default=False)
 
     def __str__(self):
