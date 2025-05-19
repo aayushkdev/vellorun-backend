@@ -1,8 +1,7 @@
-
 import json
 from openai import OpenAI
 
-def get_place_recommendations(data, selected_categories, api_key, model="meta-llama/llama-3.3-8b-instruct:free", num_recommendations=3):
+def get_place_recommendations(data, selected_categories, api_key, model="meta-llama/llama-3.3-8b-instruct:free", num_recommendations=1):
     """
     Get place recommendations based on selected categories using an LLM.
     
@@ -22,12 +21,14 @@ def get_place_recommendations(data, selected_categories, api_key, model="meta-ll
     # Filter active places by selected categories
     filtered_places = [
         {
-            "id": place["_id"],
+            "id": place["id"],
             "name": place["name"],
-            "description": place["description"]
+            "description": place["description"],
+            "visits": place["visits"],
+            "is_match": any(tag in selected_categories for tag in place.get("tags", [])),
         }
         for place in data
-        if place.get("isActive", False) and place.get("category") in selected_categories
+        if place.get("approved", False)
     ]
     
     # Check if we have places to recommend
@@ -43,9 +44,11 @@ def get_place_recommendations(data, selected_categories, api_key, model="meta-ll
         {
             "role": "user",
             "content": (
-                f"Given the following places: {json.dumps(filtered_places)}\n\n"
-                f"Suggest {num_recommendations} must-visit places based on these tags: {', '.join(selected_categories)}.\n"
-                "Return a short reason for each."
+                f"You are given a list of places with their names, descriptions, and relevance status:\n\n"
+                f"{json.dumps(filtered_places)}\n\n"
+                f"From these, select {num_recommendations} of the most interesting or important places. "
+                f"Prioritize places where 'is_match' is true (they match the user's interests), but if none exist, pick the best available based on other factors.\n"
+                "Only return a comma-separated string of place IDs (integers). No extra text."
             )
         }
     ]
@@ -71,41 +74,3 @@ def get_place_recommendations(data, selected_categories, api_key, model="meta-ll
     
     except Exception as e:
         return f"Error getting recommendations: {str(e)}"
-
-
-# Example Usage
-# # Your API key here
-    api_key = "API_KEY"
-
-    # Get recommendations
-    result = get_place_recommendations(
-        data="your dataset variable",
-        selected_categories=["Food"],
-        api_key=api_key
-    )
-
-
-
-# print(result)
-
-# to segregate categories you can use this py script
-# # Step 1: Get unique categories
-    categories = sorted({place['category'] for place in data})
-    print("Available categories:")
-    for cat in categories:
-        print("-", cat)
-
-    # Step 2: User selects one or more categories
-    selected = input("Enter one or more categories separated by commas: ").strip().split(",")
-    selected = [cat.strip() for cat in selected]
-
-    # Step 3: Filter places based on selected categories and isActive
-    filtered = [
-        {
-            "id": place["_id"],
-            "name": place["name"],
-            "description": place["description"]
-        }
-        for place in data
-        if place["category"] in selected and place["isActive"]
-    ]

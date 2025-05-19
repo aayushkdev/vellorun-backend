@@ -118,6 +118,12 @@ Response
 ```
 
 ## Place suggestion APIs
+### Get a suggestion of a place to visit from the api(AI)
+```bash
+curl -X GET http://localhost:8000/api/suggestions/ \
+          -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
 ### Suggest a new place 
 requests for superusers are approved automatically, when users try to add a place it is not shown in searches until its approved.
 ```bash
