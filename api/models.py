@@ -12,6 +12,7 @@ class CustomUser(AbstractUser):
     online = models.BooleanField(default=True)
     coord_x = models.FloatField(default=0)
     coord_y = models.FloatField(default=0)
+    badges = models.JSONField(default=list, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

@@ -23,8 +23,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'avatar', 'xp', 'level', 'visible', 'online', 'coord_x', 'coord_y']
-        read_only_fields = ['username', 'xp', 'level']
+        fields = ['username', 'email', 'avatar', 'badges', 'xp', 'level', 'visible', 'online', 'coord_x', 'coord_y']
+        read_only_fields = ['username', 'xp', 'level', 'badges']
 
 
 class PlaceImageSerializer(serializers.ModelSerializer):
