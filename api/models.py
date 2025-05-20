@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
-    username = models.CharField(max_length=150, blank=True, null=True, unique=False)  # <== FIX HERE
+    username = models.CharField(max_length=150, blank=True, null=True, unique=False)
     email = models.EmailField(unique=True)
 
     avatar = models.IntegerField(blank=True, null=True)
@@ -18,15 +18,7 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = []
 
 
-class Tag(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-
-    def __str__(self):
-        return self.name
-
-
 class Place(models.Model):
-    tags = models.ManyToManyField(Tag, related_name='places', blank=True)
     created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='contributed_places')
 
     TYPE_CHOICES = [
@@ -47,14 +39,6 @@ class Place(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class PlaceImage(models.Model):
-    place = models.ForeignKey(Place, related_name='images', on_delete=models.CASCADE)
-    image_url = models.URLField() 
-
-    def __str__(self):
-        return f"Image for {self.place.name}"
 
 
 class Visit(models.Model):
