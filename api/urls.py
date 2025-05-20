@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import GoogleAuthView, ProfileView, PlaceListCreateView, PlaceDetailView, VisitPlaceView, ApprovePlaceView, SavedPlaceView, VisibleUsersView, SuggestedPlacesView, VisitedPlacesView, ContributedPlacesView, LeaderboardView
+from .views import GoogleAuthView, ProfileView, PlaceListCreateView, PlaceDetailView, VisitPlaceView, ApprovePlaceView, SavedPlaceView, VisibleUsersView, SuggestedPlacesView, VisitedPlacesView, ContributedPlacesView, UserLeaderboardView, PlacesLeaderboardView
 
 urlpatterns = [
     path('auth/google/', GoogleAuthView.as_view(), name='google-auth'),
@@ -15,5 +15,6 @@ urlpatterns = [
     path('places/contributed/', ContributedPlacesView.as_view(), name='contributed-places'),
     path('places/saved/', SavedPlaceView.as_view(), name='saved-places'),
     path('suggestions/', SuggestedPlacesView.as_view(), name='suggested-places'),
-    path('leaderboard/', LeaderboardView.as_view(), name='leaderboard'),
+    path('user/leaderboard/', UserLeaderboardView.as_view(), name='user-leaderboard'),
+    path('places/leaderboard/', PlacesLeaderboardView.as_view(), name='place-leaderboard'),
 ]
