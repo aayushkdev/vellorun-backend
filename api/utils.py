@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from .models import Place
 
 def check_and_level_up(user):
     if user.xp%100 == 0:

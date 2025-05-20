@@ -259,3 +259,14 @@ curl -X POST https://vellorun-backend.vercel.app/api/visit/ \
      -d '{"place_id": 2}'
 
 ```
+
+### Leaderboard API
+## User leaderboard
+```bash
+curl -X GET https://vellorun-backend.vercel.app/api/user/leaderboard/
+```
+
+## places leaderboard
+```bash
+curl -X GET https://vellorun-backend.vercel.app/api/places/leaderboard/
+```

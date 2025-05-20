@@ -9,9 +9,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Q, Count
 from .serializers import RegisterSerializer, ProfileSerializer, PlaceSerializer, VisitSerializer, GoogleAuthSerializer, SavedPlaceSerializer, SuggestedPlaceSerializer
-from .utils import IsSuperUserOrReadOnly, check_and_level_up
+from .utils import IsSuperUserOrReadOnly, check_and_level_up, update_user_badges
 from .models import CustomUser, Place, Visit, SavedPlace
 from .suggestions import get_place_recommendations
 
@@ -85,7 +85,7 @@ class PlaceListCreateView(generics.ListCreateAPIView):
         if self.request.user.is_superuser:
             serializer.save(created_by=self.request.user, approved=True)
         else:
-            serializer.save(created_by=self.request.user, approved=True)
+            serializer.save(created_by=self.request.user, approved=False)
 
 class PlaceDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Place.objects.all()
@@ -253,8 +253,8 @@ class VisitedPlacesView(APIView):
         return Response({"visited_place_ids": list(place_ids)})
 
 
-class LeaderboardView(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+class UserLeaderboardView(APIView):
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request):
         users = CustomUser.objects.order_by('-level', '-xp')[:100]
@@ -269,3 +269,23 @@ class LeaderboardView(APIView):
                 'avatar': user.avatar,
             })
         return Response(data)
+
+class PlacesLeaderboardView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        places = Place.objects.annotate(
+            unique_visitors=Count('visit__user', distinct=True)
+        ).order_by('-unique_visitors', '-visits')[:100]
+
+        leaderboard = []
+        for rank, place in enumerate(places, start=1):
+            leaderboard.append({
+                "rank": rank,
+                "id": place.id,
+                "name": place.name,
+                "unique_visitors": place.unique_visitors,
+                "total_visits": place.visits,
+            })
+
+        return Response(leaderboard)
