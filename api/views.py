@@ -75,11 +75,6 @@ class PlaceListCreateView(generics.ListCreateAPIView):
         qs = Place.objects.all()
         if not self.request.user.is_superuser:
             qs = qs.filter(approved=True)
-
-        tags = self.request.query_params.getlist('tags')
-        if tags:
-            qs = qs.filter(tags__name__in=tags).distinct()
-
         return qs
 
     def perform_create(self, serializer):
@@ -87,6 +82,7 @@ class PlaceListCreateView(generics.ListCreateAPIView):
             serializer.save(created_by=self.request.user, approved=True)
         else:
             serializer.save(created_by=self.request.user, approved=False)
+
 
 class PlaceDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Place.objects.all()
@@ -198,38 +194,41 @@ class SuggestedPlacesView(APIView):
         user = request.user
         api_key = settings.OPENROUTER_API_KEY
 
-        visited_places = Place.objects.filter(visit__user=user, approved=True).prefetch_related("tags")
+        visited_places = Place.objects.filter(visit__user=user, approved=True)
         visited_place_ids = visited_places.values_list("id", flat=True)
 
         if visited_places.exists():
-            tag_counts = Counter(
-                tag.name
-                for place in visited_places
-                for tag in place.tags.all()
-            )
-            top_tags = [tag for tag, _ in tag_counts.most_common(3)]
+            category_counts = Counter(place.category for place in visited_places if place.category)
+            top_categories = [cat for cat, _ in category_counts.most_common(3)]
         else:
-            top_tags = list(
-                Tag.objects.annotate(num_places=Count("places"))
+            top_categories = (
+                Place.objects.filter(approved=True)
+                .values("category")
+                .annotate(num_places=Count("id"))
                 .order_by("-num_places")
-                .values_list("name", flat=True)[:3]
+                .values_list("category", flat=True)[:3]
             )
 
-        unvisited_places = Place.objects.filter(approved=True).exclude(id__in=visited_place_ids).prefetch_related("tags")
+        unvisited_places = (
+            Place.objects
+            .filter(approved=True)
+            .exclude(id__in=visited_place_ids)
+            .filter(category__in=top_categories)
+        )
 
         place_data = [
             {
                 "id": place.id,
                 "name": place.name,
                 "description": place.description,
-                "tags": [tag.name for tag in place.tags.all()],
+                "category": place.category,
                 "visits": place.visits,
                 "approved": place.approved
             }
             for place in unvisited_places
         ]
 
-        suggestions = get_place_recommendations(place_data, top_tags, api_key)
+        suggestions = get_place_recommendations(place_data, top_categories, api_key)
         try:
             suggested_ids = [int(pid.strip()) for pid in suggestions.split(",") if pid.strip().isdigit()]
         except ValueError:

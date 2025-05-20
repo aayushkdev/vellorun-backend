@@ -25,7 +25,7 @@ def get_place_recommendations(data, selected_categories, api_key, model="meta-ll
             "name": place["name"],
             "description": place["description"],
             "visits": place["visits"],
-            "is_match": any(tag in selected_categories for tag in place.get("tags", [])),
+            "is_match": place.get("category") in selected_categories,
         }
         for place in data
         if place.get("approved", False)
@@ -44,10 +44,10 @@ def get_place_recommendations(data, selected_categories, api_key, model="meta-ll
         {
             "role": "user",
             "content": (
-                f"You are given a list of places with their names, descriptions, and relevance status:\n\n"
+                f"You are given a list of places with their names, descriptions, and whether they match the user's interests:\n\n"
                 f"{json.dumps(filtered_places)}\n\n"
                 f"From these, select {num_recommendations} of the most interesting or important places. "
-                f"Prioritize places where 'is_match' is true (they match the user's interests), but if none exist, pick the best available based on other factors.\n"
+                f"Prioritize places where 'is_match' is true (i.e., they match the user's interests), but if none exist, pick the best available based on other factors.\n"
                 "Only return a comma-separated string of place IDs (integers). No extra text."
             )
         }
@@ -66,8 +66,7 @@ def get_place_recommendations(data, selected_categories, api_key, model="meta-ll
             messages=messages
         )
         
-        # Check and return the response
-        if completion and completion.choices and len(completion.choices) > 0:
+        if completion and completion.choices:
             return completion.choices[0].message.content
         else:
             raise Exception("No valid response received from the LLM")
