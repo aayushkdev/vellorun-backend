@@ -248,6 +248,7 @@ Filter Examples
 - With <= 100 visits: ?visits__lte=100
 - Name contains “lib”: ?name__icontains=lib
 - Combine filters: ?type=inside&visits__gte=10
+- level: ?level__gte=100, ?level__lte=100, ?level=10
 
 ## Visit APIs (also increments the xp of user by amount specified by place)
 

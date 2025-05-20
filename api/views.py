@@ -68,6 +68,7 @@ class PlaceListCreateView(generics.ListCreateAPIView):
         'visits': ['exact', 'gte', 'lte'],
         'coord_x': ['exact'],
         'coord_y': ['exact'],
+        'level': ['exact', 'gte', 'lte'],
     }   
 
     def get_queryset(self):
